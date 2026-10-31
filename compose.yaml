@@ -1,5 +1,4 @@
-
-services:
+﻿services:
   postgres:
     image: postgres:16
     container_name: subledger_postgres
@@ -17,6 +16,22 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: subledger_api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://subledger_user:change_me@postgres:5432/subledger_db
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   subledger_postgres_data:
